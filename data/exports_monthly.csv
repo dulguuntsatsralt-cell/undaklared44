@@ -1,0 +1,22 @@
+month,exports_mt,method,coverage,source_url,notes
+2025-01,5.83,derived,all coal incl. lignite (CGA),https://www.mysteel.net/news/5113518-mongolias-coal-exports-surge-over-73-yoy-in-january,Jan 2026 was +73.5% YoY
+2025-02,5.69,derived,all coal incl. lignite (CGA),https://www.bigmint.co/insights/detail/mongolia-coal-exports-climb-up-by-over-20-m-o-m-in-apr25-647775,"Jan-Apr 24.96 Mt minus Jan, Mar, Apr; Q1 matches Q1 2026 +57% YoY"
+2025-03,6.01,derived,all coal incl. lignite (CGA),https://www.bigmint.co/insights/detail/mongolia-coal-exports-climb-up-by-over-20-m-o-m-in-apr25-647775,Apr 2025 was +23.7% MoM; also matches Mar 2026 +84% YoY
+2025-04,7.43,reported,all coal incl. lignite (CGA),https://www.bigmint.co/insights/detail/mongolia-coal-exports-climb-up-by-over-20-m-o-m-in-apr25-647775,Jan-Apr 2025 = 24.96 Mt
+2025-05,6.83,derived,all coal incl. lignite (CGA),https://www.mysteel.net/news/5127214-mongolia-coal-exports-rocket-by-44-yoy-in-may,May 2026 was +44% YoY
+2025-06,6.17,derived,all coal incl. lignite (CGA),https://www.mysteel.net/news/5131819-mongolias-h1-coal-exports-surge-56-yoy,H1 2025 implied by H1 2026 +56% YoY
+2025-07,6.76,derived,all coal incl. lignite (CGA),https://www.mysteel.net/news/5109865-mongolias-2025-coal-exports-top-annual-target-set-new-record-high,Residual: 2025 total 90.02 Mt minus all other months; absorbs errors in other derived months
+2025-08,8.52,derived,all coal incl. lignite (CGA),https://www.mysteel.net/news/5100744-mongolias-coal-exports-surge-to-multi-year-high-in-september,Sept 2025 was +13.7% MoM
+2025-09,9.69,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5100744-mongolias-coal-exports-surge-to-multi-year-high-in-september,Highest month since 2019
+2025-10,7.12,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5103703-mongolias-october-coal-exports-dip-2-yoy-26-mom,
+2025-11,9.35,reported,all coal incl. lignite (CGA),https://apbi-icma.org/media-article/mongolia-nov-coal-exports-surge-to-over-9mt-keeping-2025-target-within-reach,Sxcoal calculation; CGA did not publish a November total
+2025-12,10.62,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5109865-mongolias-2025-coal-exports-top-annual-target-set-new-record-high,Conflict: a later Mysteel article gives 10.93 Mt (possible revision)
+2026-01,10.12,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5113518-mongolias-coal-exports-surge-over-73-yoy-in-january,
+2026-02,6.35,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5115319-cny-holiday-drives-down-mongolian-coal-exports-to-china-in-feb,Chinese New Year border closure
+2026-03,11.06,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5119200-mongolias-march-coal-exports-hit-historical-high-on-robust-chinese-demand,Q1 2026 = 27.53 Mt
+2026-04,11.54,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5123199-mongolia-coal-exports-see-another-monthly-record-in-april,All-time monthly high
+2026-05,9.84,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5127214-mongolia-coal-exports-rocket-by-44-yoy-in-may,Border closed May 1-3; flooding mid-May
+2026-06,10.3,derived,all coal incl. lignite (CGA),https://www.mysteel.net/news/5131819-mongolias-h1-coal-exports-surge-56-yoy,H1 2026 total 59.21 Mt minus Jan-May; matches July article (-11.4% MoM)
+2026-07,9.13,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5136085-mongolias-july-coal-exports-drop-11-mom-as-holidays-shut-customs-posts,Naadam holiday closures
+2026-08,9.45,derived,all coal incl. lignite (CGA),https://www.mysteel.net/news/5143838-limited-transport-via-ganqimaodu-port-lowers-mongolian-coal-exports-in-sept,Approximate: Sept 8.41 Mt was down about 11% MoM; cross-checks with customs Jan-Aug hard coal 74.4 Mt (ikon.mn/n/3q6n)
+2026-09,8.41,reported,all coal incl. lignite (CGA),https://www.mysteel.net/news/5143838-limited-transport-via-ganqimaodu-port-lowers-mongolian-coal-exports-in-sept,Limited transport via Ganqimaodu
