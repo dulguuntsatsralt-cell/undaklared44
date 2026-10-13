@@ -1,4 +1,11 @@
-﻿<p align="center"><img src="assets/banner-v2.png" alt="undaklared44" width="100%"></p>
+<p align="center"><img src="assets/banner-v2.png" alt="undaklared44" width="100%"></p>
+
+<p align="center">
+  <a href="https://github.com/dulguuntsatsralt-cell/undaklared44/actions/workflows/tests.yml"><img src="https://github.com/dulguuntsatsralt-cell/undaklared44/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
+  <img src="https://img.shields.io/badge/python-3.10%2B-555?logo=python&logoColor=white" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/data-Copernicus%20Sentinel--1%20%2F%20--2-555" alt="Data: Copernicus Sentinel-1 / Sentinel-2">
+  <img src="https://img.shields.io/badge/status-out--of--sample%20test%20failed-555" alt="Status: out-of-sample test failed">
+</p>
 
 # undaklared44
 
@@ -6,7 +13,7 @@
 
 ## Why
 
-In late 2022, thousands of people protested in Ulaanbaatar over what became known as the coal theft case. Reporting described coal crossing into China without customs registration, and protesters and the opposition estimated lost state revenue at around 44 trillion tÃ¶grÃ¶g (about US$13 billion). That figure was never officially confirmed, and investigations and court cases followed. A former member of parliament had already warned in 2018 about millions of tonnes of coal missing from customs declarations.
+In late 2022, thousands of people protested in Ulaanbaatar over what became known as the coal theft case. Reporting described coal crossing into China without customs registration, and protesters and the opposition estimated lost state revenue at around 44 trillion tögrög (about US$13 billion). That figure was never officially confirmed, and investigations and court cases followed. A former member of parliament had already warned in 2018 about millions of tonnes of coal missing from customs declarations.
 
 Official statistics are the only public record of how much coal leaves the country. This project asks whether free satellite imagery can provide a second, independent record:
 
@@ -19,9 +26,19 @@ The project makes no claim about any person or company. It measures coal, not cu
 
 **Step 1 is not solved yet.** The first signal, radar brightness on the truck road at the Gashuunsukhait crossing, matched 2025 exports (correlation +0.80) but failed when tested on 2026 data it had not seen (+0.11). The likely reason: a truck queue measures congestion, not volume. Full write-up in [`results/README.md`](results/README.md).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/results-dark.png">
+  <img src="assets/results-light.png" alt="Chart: the radar road signal tracked 2025 coal exports (r = +0.80) but not 2026 (r = +0.11).">
+</picture>
+
 Next: coal stockpile area at the border yards (Sentinel-2) and rail wagon counts, tested the same way.
 
 ## Method
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/pipeline-dark.png">
+  <img src="assets/pipeline-light.png" alt="Pipeline: satellite imagery, road and desert masks, signal per scene, out-of-sample test against customs exports, results log.">
+</picture>
 
 - **Imagery:** Sentinel-1 radar (all weather, day and night) and Sentinel-2 optical, free through the Microsoft Planetary Computer.
 - **Target:** monthly coal exports from Mongolia's Customs General Administration, collected in [`data/exports_monthly.csv`](data/exports_monthly.csv) with a source link for every number.
