@@ -13,7 +13,7 @@
 
 ## Why
 
-In late 2022, thousands of people protested in Ulaanbaatar over what became known as the coal theft case. Reporting described coal crossing into China without customs registration, and protesters and the opposition estimated lost state revenue at around 44 trillion tugrik (about US$13 billion). That figure was never officially confirmed, and investigations and court cases followed. A former member of parliament had already warned in 2018 about millions of tonnes of coal missing from customs declarations.
+In late 2022, thousands of people protested in Ulaanbaatar over what became known as the coal theft case. Reporting described coal crossing into China without customs registration, and protesters and the opposition estimated lost state revenue at around 44 trillion tögrög (about US$13 billion). That figure was never officially confirmed, and investigations and court cases followed. A former member of parliament had already warned in 2018 about millions of tonnes of coal missing from customs declarations.
 
 Official statistics are the only public record of how much coal leaves the country. This project asks whether free satellite imagery can provide a second, independent record:
 
