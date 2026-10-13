@@ -1,13 +1,13 @@
-<p align="center"><img src="assets/banner-v2.png" alt="undaklared44" width="100%"></p>
+<p align="center"><img src="assets/banner-v3.png" alt="undeklared44" width="100%"></p>
 
 <p align="center">
-  <a href="https://github.com/dulguuntsatsralt-cell/undaklared44/actions/workflows/tests.yml"><img src="https://github.com/dulguuntsatsralt-cell/undaklared44/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
+  <a href="https://github.com/dulguuntsatsralt-cell/undeklared44/actions/workflows/tests.yml"><img src="https://github.com/dulguuntsatsralt-cell/undeklared44/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-555?logo=python&logoColor=white" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/data-Copernicus%20Sentinel--1%20%2F%20--2-555" alt="Data: Copernicus Sentinel-1 / Sentinel-2">
   <img src="https://img.shields.io/badge/status-out--of--sample%20test%20failed-555" alt="Status: out-of-sample test failed">
 </p>
 
-# undaklared44
+# undeklared44
 
 **An independent satellite count of the coal that crosses Mongolia's border with China, built to compare against the declared export figures.**
 
