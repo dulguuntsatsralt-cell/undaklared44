@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.png" alt="undaklared44" width="100%"></p>
+
 # undaklared44
 
 **An independent satellite count of the coal that crosses Mongolia's border with China, built to compare against the declared export figures.**
