@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 from coalcast.aois import AOIS
-from coalcast.features import yard_coal_stats
+from coalcast.features import l2a_offset, yard_coal_stats
 
 USABLE_CLEAR = 0.8   # pre-registered: at least 80% of yard pixels clear
 
@@ -75,9 +75,11 @@ cat = cat[(cat["date"] >= pd.Period(first).start_time) & (cat["date"] <= pd.Peri
 rows, best = [], None
 for _, r in cat.sort_values("date").iterrows():
     b02, b03, b04, b08, scl = np.load(raw_dir / f"{r['item_id']}.npz")["bands"].astype(np.float32)
-    stats = yard_coal_stats(b02, b03, b04, b08, scl, yard)
+    offset = l2a_offset(r.get("processing_baseline"), r["date"].date().isoformat())
+    stats = yard_coal_stats(b02, b03, b04, b08, scl, yard, offset=offset)
     rows.append({"date": r["date"].date().isoformat(), "item_id": r["item_id"],
-                 "platform": r.get("platform"), "cloud_cover": r.get("cloud_cover"), **stats})
+                 "platform": r.get("platform"), "cloud_cover": r.get("cloud_cover"),
+                 "offset": offset, **stats})
     if best is None or stats["yard_clear_frac"] > best[0]:
         best = (stats["yard_clear_frac"], r["item_id"])
 

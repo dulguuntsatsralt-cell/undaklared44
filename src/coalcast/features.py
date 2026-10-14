@@ -146,6 +146,20 @@ SCL_NOT_CLEAR = (0, 1, 3, 8, 9, 10, 11)
 
 
 L2A_OFFSET = 1000.0  # processing baseline 04.00+ (all scenes since Jan 2022) stores reflectance*10000 + 1000
+BASELINE_04_START = "2022-01-25"  # first acquisitions processed with baseline 04.00
+
+
+def l2a_offset(processing_baseline=None, date=None) -> float:
+    """The value to subtract from raw Sentinel-2 L2A bands to get reflectance x 10000.
+
+    Uses the scene's processing baseline when known (04.00 or later has the
+    +1000 offset); otherwise falls back to the acquisition date.
+    """
+    if processing_baseline is not None and str(processing_baseline) not in ("", "nan", "None"):
+        return L2A_OFFSET if float(processing_baseline) >= 4.0 else 0.0
+    if date is None:
+        raise ValueError("Need a processing baseline or a date.")
+    return L2A_OFFSET if str(date)[:10] >= BASELINE_04_START else 0.0
 
 
 def yard_coal_stats(b02, b03, b04, b08, scl, yard, max_reflectance: float = 800.0,

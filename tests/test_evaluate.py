@@ -75,3 +75,25 @@ def test_stockpile_test_picks_form_on_2025_and_scores_2026():
     assert not stockpile_test(noise, ex)["passed"]                # unrelated signal fails
     gappy = good.drop([pd.Period("2026-03", "M")])            # a gap removes one change value, not the test
     assert stockpile_test(gappy, ex)["n_test"] == 8
+
+
+def test_fixed_rule_test_ignores_growth_and_needs_sign_in_most_years():
+    from coalcast.evaluate import fixed_rule_test
+    idx = pd.period_range("2022-01", "2024-12", freq="M")
+    rng = np.random.default_rng(2)
+    wiggle = np.sin(np.arange(len(idx)) * 1.3)
+    ex = pd.Series(2 + np.arange(len(idx)) * 0.2 + wiggle, index=idx)        # strong growth plus monthly swings
+    backlog = pd.Series(0.5 + 0.01 * np.arange(len(idx)) - 0.05 * wiggle + rng.normal(0, 0.005, len(idx)), index=idx)
+    res = fixed_rule_test(backlog, ex, "2022-01", "2024-12", sign=-1)
+    assert res["r_raw"] > 0                         # shared growth makes the raw correlation positive
+    assert res["r_within_year"] < -0.9 and res["years_with_sign"] == 3 and res["passed"]
+    assert not fixed_rule_test(-backlog, ex, "2022-01", "2024-12", sign=-1)["passed"]
+    short = backlog[backlog.index >= pd.Period("2024-08", "M")]
+    with pytest.raises(ValueError):
+        fixed_rule_test(short, ex, "2022-01", "2024-12")
+
+
+def test_l2a_offset():
+    from coalcast.features import l2a_offset
+    assert l2a_offset("05.10") == 1000.0 and l2a_offset(4.0) == 1000.0 and l2a_offset("03.01") == 0.0
+    assert l2a_offset(None, "2022-01-10") == 0.0 and l2a_offset(float("nan"), "2023-05-01") == 1000.0

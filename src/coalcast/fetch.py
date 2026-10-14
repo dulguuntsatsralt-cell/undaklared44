@@ -100,6 +100,7 @@ def iter_s2_items(aoi: AOI, start: str, end: str, max_cloud: int = 60, skip=froz
             "item_id": item.id,
             "platform": item.properties.get("platform"),
             "cloud_cover": item.properties.get("eo:cloud_cover"),
+            "processing_baseline": item.properties.get("s2:processing_baseline"),
         }
         yield meta, arr
 

@@ -141,6 +141,45 @@ def stockpile_test(signal: pd.Series, exports: pd.Series,
             "r": r, "r_detrended": rd, "passed": bool(passed)}
 
 
+def _within_year_residuals(s: pd.Series) -> pd.Series:
+    """Remove a separate straight-line trend (in calendar months) from each year."""
+    out = []
+    for _, g in s.groupby(s.index.year):
+        t = np.array([p.month for p in g.index], dtype=float)
+        out.append(g - np.polyval(np.polyfit(t, g.to_numpy(float), 1), t))
+    return pd.concat(out)
+
+
+def fixed_rule_test(signal: pd.Series, exports: pd.Series, start: str, end: str, sign: int = -1,
+                    min_detrended: float = 0.3, min_years: int = 2, min_months_per_year: int = 6) -> dict:
+    """Score a rule whose form and sign were fixed in advance (stockpile test v2).
+
+    Both series are monthly, indexed by Period. Months from `start` to `end`
+    with data in both are used; years with fewer than `min_months_per_year`
+    such months are dropped. Each series has its own straight-line trend
+    removed within each year, so the multi-year growth in exports does not
+    drive the result. Pass if the pooled within-year correlation has the
+    fixed sign with size at least `min_detrended`, and the sign holds in at
+    least `min_years` of the years.
+    """
+    j = pd.concat([signal.rename("sig"), exports.rename("ex")], axis=1, join="inner").dropna()
+    j = j.loc[pd.Period(start, "M"):pd.Period(end, "M")]
+    counts = j.groupby(j.index.year).size()
+    years = [int(y) for y, n in counts.items() if n >= min_months_per_year]
+    j = j[j.index.year.isin(years)]
+    if len(years) < min_years:
+        raise ValueError(f"Only {len(years)} years with at least {min_months_per_year} months; need {min_years}.")
+    rs, re_ = _within_year_residuals(j["sig"]), _within_year_residuals(j["ex"])
+    pooled = float(np.corrcoef(rs, re_)[0, 1])
+    per_year = {y: float(np.corrcoef(rs[rs.index.year == y], re_[re_.index.year == y])[0, 1]) for y in years}
+    raw = float(np.corrcoef(j["sig"], j["ex"])[0, 1])
+    n_right = sum(1 for v in per_year.values() if np.sign(v) == sign)
+    passed = np.sign(pooled) == sign and abs(pooled) >= min_detrended and n_right >= min_years
+    return {"n": len(j), "years": years, "months_per_year": {y: int(counts[y]) for y in counts.index},
+            "r_raw": raw, "r_within_year": pooled, "per_year": per_year,
+            "years_with_sign": n_right, "passed": bool(passed)}
+
+
 def summary(results: pd.DataFrame) -> pd.DataFrame:
     """MAPE, RMSE and 95% bootstrap CI for every forecast column."""
     rows = {}

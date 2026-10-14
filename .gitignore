@@ -12,6 +12,7 @@ data/masks_*.png
 data/raw_s2/
 data/s2_*.csv
 data/yards_*.png
+data/yard_timeline_*.png
 
 # Excel lock files
 ~$*
