@@ -40,7 +40,7 @@ if not signal_only:
         start, end = str(month.start_time.date()), str(month.end_time.date())
         n_new = 0
         try:
-            for meta, vv_db in iter_s1_items(aoi, start, end):
+            for meta, vv_db in iter_s1_items(aoi, start, end, skip=have):
                 if meta["item_id"] in have:
                     continue
                 np.savez_compressed(raw_dir / f"{meta['item_id']}.npz", vv_db=vv_db.astype(np.float16))
@@ -58,6 +58,8 @@ cat["date"] = pd.to_datetime(cat["date"])
 cat = cat[(cat["date"] >= pd.Period(first).start_time) & (cat["date"] <= pd.Period(last).end_time)]
 mask_path = Path("data") / f"masks_{name}.npz"
 masks = np.load(mask_path) if mask_path.exists() else None
+if masks is not None and "road" not in masks.files:
+    masks = None
 if masks is None:
     print(f"  no {mask_path}; road_signal column will be empty (see scripts/make_masks.py)")
 rows = []

@@ -140,6 +140,41 @@ def road_stats(vv_db: np.ndarray, road: np.ndarray, control: np.ndarray) -> dict
     }
 
 
+# Sentinel-2 scene classification (SCL) classes that are not usable ground:
+# 0 no data, 1 saturated, 3 cloud shadow, 8 cloud medium, 9 cloud high, 10 cirrus, 11 snow
+SCL_NOT_CLEAR = (0, 1, 3, 8, 9, 10, 11)
+
+
+L2A_OFFSET = 1000.0  # processing baseline 04.00+ (all scenes since Jan 2022) stores reflectance*10000 + 1000
+
+
+def yard_coal_stats(b02, b03, b04, b08, scl, yard, max_reflectance: float = 800.0,
+                    offset: float = L2A_OFFSET) -> dict:
+    """Coal cover inside the yard mask for one Sentinel-2 scene.
+
+    Returns `yard_clear_frac` (share of yard pixels that are clear ground)
+    and `yard_coal_frac` (share of clear yard pixels that look like coal:
+    all four bands below `max_reflectance` after removing the L2A `offset`,
+    i.e. below 8% reflectance). Raw value 0 means no data.
+    `yard_coal_frac` is NaN when no yard pixel is clear.
+    """
+    yard = np.asarray(yard, bool)
+    n_yard = int(yard.sum())
+    if n_yard == 0:
+        return {"yard_clear_frac": float("nan"), "yard_coal_frac": float("nan")}
+    bands = [np.asarray(b, float) for b in (b02, b03, b04, b08)]
+    has_data = np.all([np.isfinite(b) & (b > 0) for b in bands], axis=0)
+    clear = yard & has_data & ~np.isin(np.asarray(scl), SCL_NOT_CLEAR)
+    n_clear = int(clear.sum())
+    out = {"yard_clear_frac": n_clear / n_yard}
+    if n_clear == 0:
+        out["yard_coal_frac"] = float("nan")
+    else:
+        dark = np.all([(b - offset) < max_reflectance for b in bands], axis=0)
+        out["yard_coal_frac"] = float((dark & clear).sum() / n_clear)
+    return out
+
+
 def coal_fraction(b02: np.ndarray, b03: np.ndarray, b04: np.ndarray, b08: np.ndarray,
                   clear: np.ndarray | None = None, max_reflectance: float = 800.0) -> float:
     """Share of clear pixels that look like coal: very dark in visible and near-infrared.

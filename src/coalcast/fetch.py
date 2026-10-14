@@ -42,7 +42,7 @@ def load_s1(aoi: AOI, start: str, end: str):
                          crs="EPSG:32648", resolution=10, groupby="solar_day")
 
 
-def iter_s1_items(aoi: AOI, start: str, end: str):
+def iter_s1_items(aoi: AOI, start: str, end: str, skip=frozenset()):
     """Yield (metadata, vv_db array) for each Sentinel-1 scene, one at a time.
 
     Each scene is loaded on the same 10 m grid, so arrays from different
@@ -53,6 +53,8 @@ def iter_s1_items(aoi: AOI, start: str, end: str):
     import odc.stac
     from .features import to_db
     for item in sorted(search(aoi, "sentinel-1-rtc", start, end), key=lambda i: i.datetime):
+        if item.id in skip:
+            continue
         ds = odc.stac.load([item], bands=["vv"], bbox=aoi.bbox(), crs="EPSG:32648", resolution=10)
         meta = {
             "date": item.datetime.date().isoformat(),
@@ -72,6 +74,34 @@ def s1_grid(aoi: AOI, start: str = "2025-06-01", end: str = "2025-07-31"):
         raise RuntimeError(f"No Sentinel-1 scenes for {aoi.name} {start}..{end}")
     ds = odc.stac.load(items[:1], bands=["vv"], bbox=aoi.bbox(), crs="EPSG:32648", resolution=10)
     return ds.x.values, ds.y.values
+
+
+S2_BANDS = ["B02", "B03", "B04", "B08", "SCL"]
+
+
+def iter_s2_items(aoi: AOI, start: str, end: str, max_cloud: int = 60, skip=frozenset()):
+    """Yield (metadata, array) for each Sentinel-2 L2A scene, one at a time.
+
+    The array has shape (5, y, x): B02, B03, B04, B08, SCL as uint16, on the
+    same 10 m grid as the radar scenes (same box, projection and pixel
+    size), so the hand-drawn masks line up with both. `max_cloud` is the
+    whole-tile cloud cover filter; the yard itself is checked later with SCL.
+    Scenes whose id is in `skip` are not downloaded.
+    """
+    import odc.stac
+    for item in sorted(search(aoi, "sentinel-2-l2a", start, end, max_cloud=max_cloud), key=lambda i: i.datetime):
+        if item.id in skip:
+            continue
+        ds = odc.stac.load([item], bands=S2_BANDS, bbox=aoi.bbox(), crs="EPSG:32648", resolution=10)
+        # pixels outside the scene's footprint come back empty; store them as 0 (= no data)
+        arr = np.nan_to_num(np.stack([ds[b].isel(time=0).values for b in S2_BANDS]), nan=0).astype(np.uint16)
+        meta = {
+            "date": item.datetime.date().isoformat(),
+            "item_id": item.id,
+            "platform": item.properties.get("platform"),
+            "cloud_cover": item.properties.get("eo:cloud_cover"),
+        }
+        yield meta, arr
 
 
 def load_s2(aoi: AOI, start: str, end: str, max_cloud: int = 30):

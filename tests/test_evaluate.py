@@ -61,3 +61,17 @@ def test_metrics_and_ci():
 def test_dm_identical_forecasts():
     a = np.arange(10.0)
     assert diebold_mariano(a, a + 1, a + 1) == (0.0, 1.0)
+
+
+def test_stockpile_test_picks_form_on_2025_and_scores_2026():
+    from coalcast.evaluate import stockpile_test
+    idx = pd.period_range("2025-01", "2026-09", freq="M")
+    rng = np.random.default_rng(1)
+    ex = pd.Series(8 + np.sin(np.arange(len(idx))) * 2 + np.arange(len(idx)) * 0.1, index=idx)
+    good = pd.Series(0.2 + 0.03 * (ex.values - 8) + rng.normal(0, 0.003, len(idx)), index=idx)
+    res = stockpile_test(good, ex)
+    assert res["form"] == "level" and res["sign"] == 1 and res["passed"]
+    noise = pd.Series(rng.normal(0.2, 0.05, len(idx)), index=idx)
+    assert not stockpile_test(noise, ex)["passed"]                # unrelated signal fails
+    gappy = good.drop([pd.Period("2026-03", "M")])            # a gap removes one change value, not the test
+    assert stockpile_test(gappy, ex)["n_test"] == 8

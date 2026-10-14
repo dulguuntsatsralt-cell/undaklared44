@@ -118,3 +118,34 @@ def test_road_stats_keep_varying_when_threshold_saturates():
     assert b["road_excess_db"] > q["road_excess_db"]
     assert q["road_frac12"] == 0 and b["road_frac12"] == pytest.approx(0.6)
     assert road_stats(busy + 5, road, control)["road_excess_db"] == pytest.approx(b["road_excess_db"])
+
+
+def test_yard_coal_stats_counts_coal_and_skips_clouds_and_nodata():
+    from coalcast.features import yard_coal_stats
+    shape = (10, 10)
+    bright = np.full(shape, 3000.0)
+    b = [bright.copy() for _ in range(4)]
+    for band in b:
+        band[:3, :] = 400.0                     # 30 coal pixels
+    scl = np.full(shape, 5)                     # 5 = bare soil, clear
+    yard = np.ones(shape, bool)
+    s = yard_coal_stats(*b, scl, yard)
+    assert s["yard_clear_frac"] == 1.0 and s["yard_coal_frac"] == pytest.approx(0.3)
+    scl[8:, :] = 9                              # 20 cloudy pixels
+    for band in b:
+        band[7, :] = 0                          # 10 no-data pixels
+    s = yard_coal_stats(*b, scl, yard)
+    assert s["yard_clear_frac"] == pytest.approx(0.7)
+    assert s["yard_coal_frac"] == pytest.approx(30 / 70)
+    assert np.isnan(yard_coal_stats(*b, np.full(shape, 9), yard)["yard_coal_frac"])
+
+
+def test_yard_coal_stats_removes_l2a_offset():
+    from coalcast.features import yard_coal_stats
+    shape = (10, 10)
+    b = [np.full(shape, 3000.0) for _ in range(4)]  # 20% reflectance: ground
+    for band in b:
+        band[:4, :] = 1500.0                        # raw 1500 = 5% reflectance: coal
+    scl, yard = np.full(shape, 5), np.ones(shape, bool)
+    assert yard_coal_stats(*b, scl, yard)["yard_coal_frac"] == pytest.approx(0.4)
+    assert yard_coal_stats(*b, scl, yard, offset=0)["yard_coal_frac"] == 0.0

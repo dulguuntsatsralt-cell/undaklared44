@@ -96,6 +96,51 @@ def diebold_mariano(actual, pred_a, pred_b, power: int = 2) -> tuple[float, floa
     return float(dm), float(p)
 
 
+def _detrended_r(a: np.ndarray, b: np.ndarray) -> float:
+    """Correlation after removing a straight-line trend (in month order) from each series."""
+    t = np.arange(len(a), dtype=float)
+    ra = a - np.polyval(np.polyfit(t, a, 1), t)
+    rb = b - np.polyval(np.polyfit(t, b, 1), t)
+    return float(np.corrcoef(ra, rb)[0, 1])
+
+
+def stockpile_test(signal: pd.Series, exports: pd.Series,
+                   discovery=("2025-01", "2025-12"), test=("2026-01", "2026-09"),
+                   min_r: float = 0.5, min_detrended: float = 0.3) -> dict:
+    """The pre-registered stockpile test (results/2026-10-13_stockpile_preregistration.md).
+
+    `signal` and `exports` are monthly series indexed by Period. The change
+    form is this month minus last month, so it needs consecutive months.
+    """
+    full = signal.sort_index()
+    full = full.reindex(pd.period_range(full.index.min(), full.index.max(), freq="M"))
+    forms = {"level": full.dropna(), "change": full.diff().dropna()}   # a gap month gives no change value
+
+    def window(s, lo, hi):
+        j = pd.concat([s.rename("sig"), exports.rename("ex")], axis=1, join="inner").dropna()
+        return j.loc[pd.Period(lo, "M"):pd.Period(hi, "M")]
+
+    disc = {}
+    for k, s in forms.items():
+        w = window(s, *discovery)
+        disc[k] = _detrended_r(w["sig"].to_numpy(float), w["ex"].to_numpy(float)) if len(w) >= 4 else float("nan")
+    valid = {k: v for k, v in disc.items() if np.isfinite(v)}
+    if not valid:
+        raise ValueError("Not enough 2025 months to choose a form.")
+    form = max(valid, key=lambda k: abs(valid[k]))
+    sign = 1 if valid[form] >= 0 else -1
+
+    w = window(forms[form], *test)
+    if len(w) < 4:
+        raise ValueError(f"Only {len(w)} test months with data; need at least 4.")
+    x, y = w["sig"].to_numpy(float), w["ex"].to_numpy(float)
+    r = float(np.corrcoef(x, y)[0, 1])
+    rd = _detrended_r(x, y)
+    passed = (np.sign(r) == sign and abs(r) >= min_r and np.sign(rd) == sign and abs(rd) >= min_detrended)
+    return {"form": form, "sign": sign, "discovery": disc, "n_test": len(w),
+            "r": r, "r_detrended": rd, "passed": bool(passed)}
+
+
 def summary(results: pd.DataFrame) -> pd.DataFrame:
     """MAPE, RMSE and 95% bootstrap CI for every forecast column."""
     rows = {}
