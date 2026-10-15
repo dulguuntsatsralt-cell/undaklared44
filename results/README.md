@@ -52,3 +52,33 @@ Every month had at least 3 usable scenes (3 to 12).
 **Reading:** the pre-registration listed this risk: coal in a yard is a stock, not a flow. A full yard can mean coal is piling up because it is not crossing, which would push the sign negative, as in 2026. That is a guess drawn from the failed test, not a finding. Testing it would need a new rule (negative sign) fixed now and scored on data not yet seen: months from October 2026 onward, or 2022 to 2024 if export figures for those years are added.
 
 **Next:** decide whether to pre-register the negative-sign stockpile rule on new months, or move to rail (wagon counts at the Gashuunsukhait rail terminal).
+
+## 2026-10-14: Stockpile test v2 (backlog sign, 2022 to 2024)
+
+**Files:** `2026-10-14_stockpile_v2_preregistration.md` (rule, written before any 2022 to 2024 imagery was downloaded), `2026-10-14_yard_start.md` and `2026-10-14_yard_timeline.png` (yard start month, fixed from images alone).
+
+**Question:** The first stockpile test flipped sign between 2025 and 2026. Is the 2026 reading right: does a fuller yard mean lower exports, on three years nobody had looked at?
+
+**Rule (fixed before testing):** same measure and same yard as the first test; level form, negative sign; official NSO coal exports; each series detrended within each year; pass needs a pooled within-year correlation of -0.30 or lower and a negative sign in at least 2 of 3 years.
+
+| | Months | Within-year detrended r |
+|---|---|---|
+| 2022 | 12 | +0.04 |
+| 2023 | 12 | +0.13 |
+| 2024 | 12 | -0.22 |
+| **Pooled** | **36** | **-0.05** |
+
+Raw correlation (not part of the rule): -0.15.
+
+**Result: failed.** Over 36 unseen months the yard coal fraction has essentially no relation to monthly exports, in either direction.
+
+**Reading:** together with the first test, this says the coal visible in this one yard does not track national exports month to month. The 2025 and 2026 correlations (+0.42, -0.69 after detrending) were most likely noise on short samples, which is what the pre-registration was meant to catch.
+
+**Next:** the satellite measures are closed for now. The project moves to comparing both countries' customs records (see `2026-10-14_mirror_gap.md`).
+
+
+## 2026-10-14: Mirror gap, Mongolia vs China customs records
+
+**File:** `2026-10-14_mirror_gap.md` (full write-up), `mirror_gap_annual.csv`.
+
+Not a pre-registered test; a first descriptive comparison. Tonnes match: China's record is 95% to 106% of Mongolia's in every year with reported figures, within about 2% since 2017. Values do not: in 2021 and 2022 China valued the same coal at 73% and 78% of Mongolia's figure, $2.2 billion lower in total (2011: $0.7 billion). Four explanations are listed there, each with the data that would separate it from the others. Monthly data is still downloading.
