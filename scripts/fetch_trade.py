@@ -72,7 +72,7 @@ def _get(url, params, tries=6):
     raise RuntimeError("rate limited too many times")
 
 
-def fetch_comtrade(last_month: str, have: pd.DataFrame) -> pd.DataFrame:
+def fetch_comtrade(last_month: str, have: pd.DataFrame, save_to=None) -> pd.DataFrame:
     """Fetch every (frequency, period, side) not already in `have`; return old and new rows together."""
     done = set(zip(have["freq"], have["period"].astype(str), have["reporter"])) if len(have) else set()
     jobs = [("A", str(y)) for y in range(2010, int(last_month[:4]) + 1)]
@@ -91,6 +91,8 @@ def fetch_comtrade(last_month: str, have: pd.DataFrame) -> pd.DataFrame:
                              "cif_usd": d["cifvalue"], "fob_usd": d["fobvalue"]})
             time.sleep(1.1)
         print(f"  {i + 1}/{len(jobs)} {freq} {period}", end="\r")
+        if save_to is not None and (i + 1) % 6 == 0:   # save as we go, so a stop loses little
+            pd.DataFrame(rows).to_csv(save_to, index=False)
     print()
     return pd.DataFrame(rows)
 
@@ -103,6 +105,6 @@ if __name__ == "__main__":
     if "--nso-only" not in sys.argv:
         path = Path("data/trade_comtrade_coal.csv")
         have = pd.read_csv(path) if path.exists() else pd.DataFrame()
-        ct = fetch_comtrade(nso["month"].iloc[-1], have)
+        ct = fetch_comtrade(nso["month"].iloc[-1], have, save_to=path)
         ct.to_csv("data/trade_comtrade_coal.csv", index=False)
         print(f"Comtrade: {len(ct)} rows")
