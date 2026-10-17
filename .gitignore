@@ -16,3 +16,6 @@ data/yard_timeline_*.png
 
 # Excel lock files
 ~$*
+data/road_*.npz
+data/trucks_*.csv
+data/truck_tune_*.png

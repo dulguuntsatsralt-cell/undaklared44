@@ -30,6 +30,9 @@ AOIS = {
         AOI("gashuunsukhait", 42.411285, 107.572502, 4.0, "border",
             "Main coal crossing to China (Ganqimaodu side). Core truck-queue signal. "
             "Centre taken from Google Maps satellite view, 2026-10-13."),
+        AOI("coal_road", 42.858, 106.860, 4.0, "road",
+            "Open stretch of the paved Ukhaa Khudag - Gashuun Sukhait coal road (OpenStreetMap way "
+            "258363586), about 75 km from the border, away from towns. Moving-truck counts."),
         AOI("tavan_tolgoi", 43.60, 105.50, 6.0, "mine",
             "Tavan Tolgoi / Ukhaa Khudag mine area: stockpiles and loading. VERIFY."),
         AOI("shiveekhuren", 42.95, 101.33, 4.0, "border",

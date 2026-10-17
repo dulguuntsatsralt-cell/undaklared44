@@ -149,3 +149,31 @@ def test_yard_coal_stats_removes_l2a_offset():
     scl, yard = np.full(shape, 5), np.ones(shape, bool)
     assert yard_coal_stats(*b, scl, yard)["yard_coal_frac"] == pytest.approx(0.4)
     assert yard_coal_stats(*b, scl, yard, offset=0)["yard_coal_frac"] == 0.0
+
+
+def test_moving_trucks_finds_colour_offset_not_parked_trucks():
+    from coalcast.features import moving_trucks
+    shape = (20, 60)
+    road = np.zeros(shape, bool)
+    road[9:12, :] = True                                    # a 3-pixel-wide road
+    base = 1000 + 1500                                      # raw value: offset + 15% reflectance
+    b02, b03, b04 = (np.full(shape, float(base)) for _ in range(3))
+    scl = np.full(shape, 5)
+    # moving truck: blue pixel at col 10, red pixel two columns further on
+    b02[10, 10] += 900
+    b04[10, 12] += 900
+    # parked truck: bright in all bands at the same place, no colour offset
+    for b in (b02, b03, b04):
+        b[10, 40] += 900
+    res = moving_trucks(b02, b03, b04, scl, road)
+    assert res["n_trucks"] == 1 and res["where"][0] == (10, 10)
+    assert res["road_clear_frac"] == 1.0
+    scl[:] = 9                                              # all cloud: no count
+    assert np.isnan(moving_trucks(b02, b03, b04, scl, road)["n_trucks"])
+
+
+def test_line_buffer_mask():
+    from coalcast.features import line_buffer_mask
+    xs, ys = np.arange(0, 100, 10.0), np.arange(0, 100, 10.0)
+    m = line_buffer_mask(xs, ys, np.array([[0.0, 50.0], [100.0, 50.0]]), 10)
+    assert m[5].all() and m[4].all() and m[6].all() and not m[3].any()
