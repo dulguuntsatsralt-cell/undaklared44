@@ -82,3 +82,22 @@ Raw correlation (not part of the rule): -0.15.
 **File:** `2026-10-14_mirror_gap.md` (full write-up), `mirror_gap_annual.csv`.
 
 Not a pre-registered test; a first descriptive comparison. Tonnes match: China's record is 95% to 106% of Mongolia's in every year with reported figures, within about 2% since 2017. Values do not: in 2021 and 2022 China valued the same coal at 73% and 78% of Mongolia's figure, $2.2 billion lower in total (2011: $0.7 billion). Four explanations are listed there, each with the data that would separate it from the others. Monthly data is still downloading.
+
+## 2026-10-17: Border congestion vs the price gap (Sentinel-1, 2019 to 2024)
+
+**Files:** `2026-10-15_congestion_gap_preregistration.md` (rule, written before any 2019 to 2024 radar was downloaded), `congestion_gap_monthly.csv`.
+
+**Question:** Is the gap between China's and Mongolia's recorded coal price larger in months when the radar shows a more jammed border?
+
+**Rule (fixed before testing):** `road_p90_db`, orbit 84, monthly mean, against log(China price / Mongolia price); pass needs r of -0.30 or lower over all months and within January 2021 to August 2022.
+
+| Period | Months | r | Spearman |
+|---|---|---|---|
+| 2019 to 2024 | 61 | **+0.57** | +0.68 |
+| Jan 2021 to Aug 2022 | 18 | **+0.26** | +0.26 |
+
+**Result: failed, and in the opposite direction.** The price gap was largest when the road was least bright, not most.
+
+**Why (looked at after scoring):** yearly averages of road brightness: 2019 21.4 dB, 2020 18.0, 2021 16.4, 2022 16.3, 2023 17.9, 2024 20.4. Brightness was lowest in 2021-22, the years of border closures and the lowest exports (15 to 21 Mt a year). So at this crossing the radar mostly shows how many trucks are present, and during closures there were fewer, not more. This was listed as a risk in advance ("a closed border could look less congested than a slow one"). The measure cannot tell a closed border from a quiet one, so it cannot test the scarcity idea.
+
+**What it does show (descriptive, not a test):** the price gap opened in exactly the period when the radar shows the crossing at its emptiest in six years. That is independent, physical confirmation that 2021-22 was a period of choked border trade, which is the setting the scarcity reading needs, but it does not show that scarcity caused the gap.
