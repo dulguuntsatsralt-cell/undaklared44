@@ -101,3 +101,21 @@ Not a pre-registered test; a first descriptive comparison. Tonnes match: China's
 **Why (looked at after scoring):** yearly averages of road brightness: 2019 21.4 dB, 2020 18.0, 2021 16.4, 2022 16.3, 2023 17.9, 2024 20.4. Brightness was lowest in 2021-22, the years of border closures and the lowest exports (15 to 21 Mt a year). So at this crossing the radar mostly shows how many trucks are present, and during closures there were fewer, not more. This was listed as a risk in advance ("a closed border could look less congested than a slow one"). The measure cannot tell a closed border from a quiet one, so it cannot test the scarcity idea.
 
 **What it does show (descriptive, not a test):** the price gap opened in exactly the period when the radar shows the crossing at its emptiest in six years. That is independent, physical confirmation that 2021-22 was a period of choked border trade, which is the setting the scarcity reading needs, but it does not show that scarcity caused the gap.
+
+## 2026-10-17: Moving-truck counter on the coal road (Sentinel-2, 2019 to Aug 2022)
+
+**Files:** `2026-10-17_truck_counter_preregistration.md` (rule), `2026-10-17_truck_tuning.md` and `2026-10-17_truck_tune.png` (detector changed and fixed on 2023-2024 images only, before counting).
+
+**Question:** Does a count of moving trucks on an open 9 km stretch of the Ukhaa Khudag to Gashuun Sukhait road track monthly coal exports, in the years before the railway?
+
+| Check | Result | Needed |
+|---|---|---|
+| Correlation with exports (44 months) | **-0.09** | +0.50 or higher |
+| Within-year detrended, pooled | **-0.21** | +0.30 or higher |
+| Per year | 2019 -0.69, 2020 -0.36, 2021 +0.50, 2022 +0.68 | positive in 3 of 4 |
+
+**Result: failed.** The counter does not track exports month to month.
+
+**Why (looked at after scoring):** the counts are too small and too sparse to carry a monthly signal. Usable scenes averaged 3 per month. The mean was 2 to 9 trucks per scene, and 56% to 76% of usable scenes had none at all. Each count is a single snapshot taken around 11:00 local time, so it depends on whether a convoy happened to be on that 9 km when the satellite passed. Yearly averages move roughly with exports (2021, the year of closures, had the fewest), but at a monthly level the noise dominates. A longer stretch of road, or several stretches, would give more trucks per scene; that would be a new, separately registered test.
+
+**Consequence:** as stated in the pre-registration, the next steps (counting trucks out of the state mine and comparing with its reported sales) are not attempted with this detector.
