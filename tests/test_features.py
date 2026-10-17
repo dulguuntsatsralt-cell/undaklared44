@@ -156,15 +156,15 @@ def test_moving_trucks_finds_colour_offset_not_parked_trucks():
     shape = (20, 60)
     road = np.zeros(shape, bool)
     road[9:12, :] = True                                    # a 3-pixel-wide road
-    base = 1000 + 1500                                      # raw value: offset + 15% reflectance
-    b02, b03, b04 = (np.full(shape, float(base)) for _ in range(3))
+    b02 = np.full(shape, 1000 + 800.0)                      # road: blue 8%, red 13% reflectance
+    b03 = np.full(shape, 1000 + 1000.0)
+    b04 = np.full(shape, 1000 + 1300.0)
     scl = np.full(shape, 5)
-    # moving truck: blue pixel at col 10, red pixel two columns further on
-    b02[10, 10] += 900
-    b04[10, 12] += 900
-    # parked truck: bright in all bands at the same place, no colour offset
-    for b in (b02, b03, b04):
-        b[10, 40] += 900
+    # moving dark truck: blue-shifted pixel at col 10, red-shifted two columns on; no brighter than the road
+    b04[10, 10] = 1000 + 800.0
+    b02[10, 12] = 1000 + 450.0
+    # parked truck: brighter in all bands, same colour as the road
+    b02[10, 40], b03[10, 40], b04[10, 40] = 1000 + 1600.0, 1000 + 2000.0, 1000 + 2600.0
     res = moving_trucks(b02, b03, b04, scl, road)
     assert res["n_trucks"] == 1 and res["where"][0] == (10, 10)
     assert res["road_clear_frac"] == 1.0

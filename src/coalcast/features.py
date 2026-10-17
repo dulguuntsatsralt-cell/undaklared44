@@ -249,25 +249,26 @@ def line_buffer_mask(xs: np.ndarray, ys: np.ndarray, line_xy: np.ndarray, width_
 
 # Moving-truck detector for Sentinel-2 (after Fisser et al. 2022, Remote Sensing 14:1595).
 # The blue, green and red bands are captured a fraction of a second apart, so a
-# moving truck lands in a slightly different place in each: a blue-tinted pixel
-# with a red-tinted pixel a few metres further along. Parked trucks and buildings
-# have no colour offset. Thresholds are in reflectance (0..1).
-TRUCK_PARAMS = dict(min_rise=0.02, tint=1.15, max_gap_px=3)
+# moving truck lands in a slightly different place in each: a blue-shifted pixel
+# with a red-shifted pixel a few metres further along. Parked trucks and buildings
+# have no colour offset. Coal trucks on dark asphalt are often no brighter than
+# the road, so (unlike the original method) only the colour shift is used, not
+# brightness. Tuned by eye on 2023-2024 scenes only (results/2026-10-17_truck_tuning.md).
+TRUCK_PARAMS = dict(blue_shift=0.12, red_shift=0.15, max_gap_px=3)
 
 
-def moving_trucks(b02, b03, b04, scl, road, offset: float = 1000.0, min_rise: float = TRUCK_PARAMS["min_rise"],
-                  tint: float = TRUCK_PARAMS["tint"], max_gap_px: int = TRUCK_PARAMS["max_gap_px"]) -> dict:
+def moving_trucks(b02, b03, b04, scl, road, offset: float = 1000.0, blue_shift: float = TRUCK_PARAMS["blue_shift"],
+                  red_shift: float = TRUCK_PARAMS["red_shift"], max_gap_px: int = TRUCK_PARAMS["max_gap_px"]) -> dict:
     """Count moving trucks on the road mask in one Sentinel-2 scene.
 
-    A blue pixel: blue at least `min_rise` above the road's median blue, and its
-    blue/red ratio at least `tint` times the road's usual ratio. A red pixel: the
-    same with red and blue swapped. A truck is a connected group of blue pixels
-    with a red pixel within `max_gap_px` pixels. Returns road_clear_frac,
-    n_trucks, and the (row, col) of each truck (first blue pixel).
+    Colour index d = (blue - red) / (blue + red), compared with the road's median
+    d in that scene. A blue pixel has d at least `blue_shift` above the median; a
+    red pixel has d at least `red_shift` below it. A truck is a connected group
+    of blue pixels with a red pixel within `max_gap_px` pixels. Returns
+    road_clear_frac, n_trucks, and the (row, col) of each truck (first blue pixel).
     """
     from scipy import ndimage
     road = np.asarray(road, bool)
-    bands = [(np.asarray(b, float) - offset) / 10000.0 for b in (b02, b03, b04)]
     raw = [np.asarray(b, float) for b in (b02, b03, b04)]
     has_data = np.all([np.isfinite(r) & (r > 0) for r in raw], axis=0)
     clear = road & has_data & ~np.isin(np.asarray(scl), SCL_NOT_CLEAR)
@@ -276,12 +277,13 @@ def moving_trucks(b02, b03, b04, scl, road, offset: float = 1000.0, min_rise: fl
     if clear.sum() < 20:
         out["n_trucks"] = float("nan")
         return out
-    blue, _, red = bands
-    bg_b, bg_r = np.median(blue[clear]), np.median(red[clear])
-    ratio = (bg_b + 1e-6) / (bg_r + 1e-6)
+    blue, red = (raw[0] - offset) / 10000.0, (raw[2] - offset) / 10000.0
     with np.errstate(divide="ignore", invalid="ignore"):
-        is_blue = clear & (blue - bg_b > min_rise) & (blue / red > ratio * tint)
-        is_red = clear & (red - bg_r > min_rise) & (red / blue > tint / ratio)
+        d = (blue - red) / (blue + red)
+    d = np.where(np.isfinite(d), d, np.nan)
+    bg = np.nanmedian(d[clear])
+    is_blue = clear & (d - bg > blue_shift)
+    is_red = clear & (bg - d > red_shift)
     near_red = ndimage.binary_dilation(is_red, iterations=max_gap_px)
     labels, n = ndimage.label(is_blue, structure=np.ones((3, 3)))
     where = []
